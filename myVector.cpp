@@ -8,26 +8,31 @@
 
 #include "myVector.hpp"
 
+void vectorMedian(const std::vector<int>& instructions){
+    myVector aVector;
+
+    for (const int value : instructions){
+        if (value == -1){
+            aVector.getMediansToPrint().push_back(aVector.popMedian());
+        } else {
+            aVector.insert(value);
+        }
+    }
+
+    //printing medians out after algorithm is finished sorting
+    for (const int median : aVector.getMediansToPrint()){
+        std::cout << median << " ";
+    }
+}
+
 myVector::myVector(){
     //constructor calls vector constructor to make empty vector
     mediansToPrint_ = std::vector<int>();
     sortedMedians_ = std::vector<int>();
 }
 
-void myVector::vectorMedian(const std::vector<int>& instructions){
-    
-    for (const int value : instructions){
-        if (value == -1){
-            mediansToPrint_.push_back(popMedian());
-        } else {
-            insert(value);
-        }
-    }
-
-    //printing medians out after algorithm is finished sorting
-    for (const int median : mediansToPrint_){
-        std::cout << median << " ";
-    }
+std::vector<int>& myVector::getMediansToPrint(){
+    return mediansToPrint_;
 }
 
 int myVector::popMedian(){

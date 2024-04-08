@@ -7,17 +7,20 @@
 //libraries
 #include <vector>
 
+//vectorMedian signature
+void vectorMedian(const std::vector<int>& instructions);
+
 class myVector{
     public:
         //constructor
         myVector();
 
         //methods
-        void vectorMedian(const std::vector<int>& instructions);
-
         int popMedian();
 
         void insert(const int& median);
+
+        std::vector<int>& getMediansToPrint();
 
     private:
         std::vector<int> mediansToPrint_;
