@@ -8,11 +8,11 @@
 
 #include "myList.hpp"
 
-void listMedian(const std::vector<int>& instructions) {
+void listMedian(const std::vector<int>& instructions){
     //initalizing data structure
     myList aList;
     
-    for (const int value : instructions) {
+    for (const int value : instructions){
         if (value == -1) {
             aList.getMediansToPrint().push_back(aList.popMedian());
         } else {
@@ -21,12 +21,12 @@ void listMedian(const std::vector<int>& instructions) {
     }
 
     //printing medians out after algorithm is finished sorting
-    for (const int median : aList.getMediansToPrint()) {
+    for (const int median : aList.getMediansToPrint()){
         std::cout << median << " ";
     }
 }
 
-myList::myList() {
+myList::myList(){
     //constructor calls list constructor to make empty list
     mediansToPrint_ = std::vector<int>();
     sortedMedians_ = std::list<int>();
@@ -36,7 +36,7 @@ std::vector<int>& myList::getMediansToPrint(){
     return mediansToPrint_;
 }
 
-int myList::popMedian() {
+int myList::popMedian(){
     //calculating median index
     int medianIndex = sortedMedians_.size() / 2;
     int median;
@@ -44,7 +44,7 @@ int myList::popMedian() {
     //if list has even number of instructions
     if (sortedMedians_.size() % 2 == 0) {
         std::list<int>::iterator it = sortedMedians_.begin();
-        for (int i = 0; i < medianIndex - 1; ++i) {
+        for (int i = 0; i < medianIndex - 1; ++i){
             ++it;
         }
         median = *it;
@@ -52,7 +52,7 @@ int myList::popMedian() {
         sortedMedians_.erase(it);
     } else {
         std::list<int>::iterator it = sortedMedians_.begin();
-        for (int i = 0; i < medianIndex; ++i) {
+        for (int i = 0; i < medianIndex; ++i){
             ++it;
         }
         median = *it;
@@ -62,7 +62,7 @@ int myList::popMedian() {
     return median;
 }
 
-void myList::insert(const int& median) {
+void myList::insert(const int& median){
     //declaring iterator
     std::list<int>::iterator myIt;
     //iterator begins at list start, ends at list end
