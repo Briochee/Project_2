@@ -36,9 +36,7 @@ std::vector<int>& myVector::getMediansToPrint(){
 }
 
 int myVector::popMedian(){
-    //sorting vector
-    std::sort(sortedMedians_.begin(), sortedMedians_.end());
-
+    //calculating median index
     int medianIndex = sortedMedians_.size() / 2;
     int median;
 
@@ -56,5 +54,9 @@ int myVector::popMedian(){
 }
 
 void myVector::insert(const int& median){
-    sortedMedians_.push_back(median);
+    //declaring iterator
+    std::vector<int>::iterator myIt;
+    //iterator begins at vector start, ends at vector end
+    myIt = std::lower_bound(sortedMedians_.begin(), sortedMedians_.end(), median);
+    sortedMedians_.insert(myIt, median);
 }
