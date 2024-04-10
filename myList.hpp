@@ -9,7 +9,7 @@
 #include <list>
 
 //listMedian signature
-void listMedian(const std::vector<int>& instructions);
+void listMedian(const std::vector<int>* instructions);
 
 class myList{
     public:

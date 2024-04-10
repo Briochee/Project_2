@@ -8,11 +8,11 @@
 
 #include "myList.hpp"
 
-void listMedian(const std::vector<int>& instructions){
+void listMedian(const std::vector<int>* instructions){
     //initalizing data structure
     myList aList;
     
-    for (const int value : instructions){
+    for (const int value : *instructions){
         if (value == -1) {
             aList.getMediansToPrint().push_back(aList.popMedian());
         } else {

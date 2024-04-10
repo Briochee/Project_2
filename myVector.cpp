@@ -8,10 +8,10 @@
 
 #include "myVector.hpp"
 
-void vectorMedian(const std::vector<int>& instructions){
+void vectorMedian(const std::vector<int>* instructions){
     myVector aVector;
 
-    for (const int value : instructions){
+    for (const int value : *instructions){
         if (value == -1){
             aVector.getMediansToPrint().push_back(aVector.popMedian());
         } else {

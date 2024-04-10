@@ -1,5 +1,5 @@
 //Rio Simpson
-//Project 2, myheap class
+//Project 2, myHeap class
 
 #ifndef MYHEAP_HPP
 #define MYHEAP_HPP
@@ -9,7 +9,7 @@
 #include <queue>
 
 //heapMedian signature
-void heapMedian(const std::vector<int>& instructions);
+void heapMedian(const std::vector<int>* instructions);
 
 class myHeap {
     public:

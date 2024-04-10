@@ -8,7 +8,7 @@
 #include <vector>
 
 //vectorMedian signature
-void vectorMedian(const std::vector<int>& instructions);
+void vectorMedian(const std::vector<int>* instructions);
 
 class myVector{
     public:

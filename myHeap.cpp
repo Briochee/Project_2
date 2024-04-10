@@ -8,10 +8,11 @@
 
 #include "myHeap.hpp"
 
-void heapMedian(const std::vector<int>& instructions){
+void heapMedian(const std::vector<int>* instructions){
     //creating heap object for heapMedian
     myHeap aHeap;
-    for (const int value : instructions) {
+    
+    for (const int value : *instructions) {
         if (value == -1) {
             aHeap.getMediansToPrint().push_back(aHeap.popMedian());
         } else {
