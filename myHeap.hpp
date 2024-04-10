@@ -17,10 +17,13 @@ class myHeap {
         myHeap();
 
         //methods
+        //popMedian method takes no parameters, returns the integer value it removed from heap
         int popMedian();
-
+        
+        //insert function takes an integer refence to insert into heap
         void insert(const int& median);
 
+        //basic getter to return vector for printing
         std::vector<int>& getMediansToPrint();
 
     private:

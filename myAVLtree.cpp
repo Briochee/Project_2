@@ -50,7 +50,7 @@ void AvlTree::insert(const int& median) {
         large.push(median);
     }
 
-    rebalance();
+    balance();
 }
 
 int AvlTree::popMedian() {
@@ -60,15 +60,21 @@ int AvlTree::popMedian() {
     //removes value from top of small avl tree
     int mid = small.popMax();
 
-    rebalance();
+    balance();
 
     return mid;
 }
 
-void AvlTree::rebalance() {
+void AvlTree::balance() {
     if (small.getSize() > large.getSize() + 1){
+        //if the size of the small tree is greater than the large tree by more than 1 (the median)
+        //the max value (median) of the small tree is moved to the large tree (as its minimum most value)
+        //popMax is called and reconfigures the root node
         large.push(small.popMax());
     } else if (large.getSize() > small.getSize()){
+        //if the size of the large tree is greater than the small tree
+        //the min value (new median) of the large tree is moved to the small tree (as its root value and becomes the median)
+        //popMin is called and reconfigures the root node
         small.push(large.popMin());
     }
 }

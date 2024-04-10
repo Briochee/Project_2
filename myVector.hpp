@@ -16,10 +16,13 @@ class myVector{
         myVector();
 
         //methods
+        //popMedian method takes no parameters, returns the integer value it removed from vector
         int popMedian();
-
+        
+        //insert function takes an integer refence to insert into vector
         void insert(const int& median);
 
+        //basic getter to return vector for printing
         std::vector<int>& getMediansToPrint();
 
     private:
