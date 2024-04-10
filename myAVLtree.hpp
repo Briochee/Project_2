@@ -1,237 +1,238 @@
 //Rio Simpson
 //Project 2, myList class
-//NOTE: AVLtree class taken from Data Structures and Algorithm Analysis, 4th Edition, Mark Allen Weiss
+//NOTE: AVLtree class taken from Data Structures and Algorithm Analysis, 4th Edition, Mark Allen Weiss, adapted by Rio Simpson for this project
+//NOTE: Appropriate modifications taken from https://www.programiz.com
 
 #ifndef MYAVLTREE_HPP
 #define MYAVLTREE_HPP
 
-//#include "dsexceptions.h"
 #include <algorithm>
 #include <iostream>
 #include <vector>
-#include <exception>
-
-// AvlTree class
-//
-// CONSTRUCTION: zero parameter
-//
-// ******************PUBLIC OPERATIONS*********************
-// void insert( x )       --> Insert x
-// void remove( x )       --> Remove x (unimplemented)
-// bool contains( x )     --> Return true if x is present
-// Comparable findMin( )  --> Return smallest item
-// Comparable findMax( )  --> Return largest item
-// boolean isEmpty( )     --> Return true if empty; else false
-// void makeEmpty( )      --> Remove all items
-// void printTree( )      --> Print tree in sorted order
-// ******************ERRORS********************************
-// Throws UnderflowException as warranted
+#include <stack>
 
 //treeMedian Signature
 void treeMedian(const std::vector<int>* instructions);
 
+//node structure
+struct Node {
+    int val, height;
+    Node *left, *right;
+
+    Node(const int& val) : val{val}, left{nullptr}, right{nullptr}, height{1} {}
+};
+
+//structure of avl tree
+struct AVL {
+    public:
+        //Root node
+        Node* root;
+
+        //default constructor
+        AVL(){
+            root = nullptr;
+            size = 0;
+        }
+
+        //Removes the maximum node in the tree
+        int popMax() {
+            if (!root) return -1;
+
+            Node* ptr = root;
+            while (ptr->right) ptr = ptr->right;
+
+            int max = ptr->val;
+
+            root = deleteNode(root, ptr->val);
+
+            size--;
+            return max;
+        }
+
+        //Removes the minimum node in the tree
+        int popMin() {
+            if (!root) return -1;
+
+            Node* ptr = root;
+            while (ptr->left) ptr = ptr->left;
+
+            int min = ptr->val;
+
+            root = deleteNode(root, ptr->val);
+
+            size--;
+            return min;
+        }
+
+        //Returns max number in tree
+        int getMax() {
+            if (!root) return -1;
+
+            Node* ptr = root;
+            while (ptr->right) ptr = ptr->right;
+
+            return ptr->val;
+        }
+
+        //Adds node to tree
+        void push(int val) {
+            root = insertNode(root,val);
+            size++;
+        }
+
+        //Returns size of tree
+        int getSize() {return size;}
+
+        //Checks if tree is empty or not
+        bool isEmpty() {return !root;}
+
+    private:
+        int size;
+        
+        //Returns node height
+        int getHeight(Node* node) {
+            if (!node) return 0;
+            return node->height;
+        }
+
+        //Updates a nodes height
+        void updateHeight(Node* node) {node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;}
+
+        //Gets the balance factor of a node
+        int bf (Node* node) {
+            if (!node) return 0;
+            return getHeight(node->left) - getHeight(node->right);
+        }
+
+        //Performs left rotation
+        Node* leftRotate(Node* node) {
+            Node* new_root = node->right;
+            Node* temp = new_root->left;
+
+            new_root->left = node;
+            node->right = temp;
+
+            updateHeight(node);
+            updateHeight(new_root);
+
+            return new_root;
+        }
+
+        //Performs right rotation
+        Node* rightRotate(Node* node) {
+            Node* new_root = node->left;
+            Node* temp = new_root->right;
+
+            new_root->right = node;
+            node->left = temp;
+
+            updateHeight(node);
+            updateHeight(new_root);
+
+            return new_root;
+        }
+
+        //Finds the minimum of current node
+        Node* minNode(Node* node) {
+            Node *ptr = node;
+            while (ptr->left) ptr = ptr->left;
+            return ptr;
+        }
+
+        //Inserts node into tree
+        Node* insertNode(Node* node, int val) {
+            if (!node) return new Node(val);
+
+            if (val <= node->val) node->left = insertNode(node->left, val);
+            else if (val > node->val) node->right = insertNode(node->right, val);
+
+            updateHeight(node);
+            int bal = bf(node);
+
+            //Balance the tree
+            if (bal > 1) {
+                if (val <= node->left->val) return rightRotate(node);
+                else if (val > node->left->val) {
+                    node->left = leftRotate(node->left);
+                    return rightRotate(node);
+                }
+            }
+            if (bal < -1) {
+                if (val > node->right->val) return leftRotate(node);
+                else if (val <= node->right->val) {
+                    node->right = rightRotate(node->right);
+                    return leftRotate(node);
+                }
+            }
+
+            return node;
+        }
+
+        //Removes node from tree
+        Node* deleteNode(Node* node, int val) {
+            if (!node) return node;
+
+            if (val < node->val) node->left = deleteNode(node->left, val);
+            else if (val > node->val) node->right = deleteNode(node->right, val);
+            else {
+                if ((!node->left) || (!node->right)) {
+                    Node* temp;
+                    if (node->left) temp = node->left;
+                    else temp = node->right;
+
+                    if (!temp) {
+                        temp = node;
+                        node = nullptr;
+                    }
+                    else *node = *temp;
+
+                    delete temp;
+                }
+                else {
+                    Node* temp = minNode(node->right);
+                    node->val = temp->val;
+                    node->right = deleteNode(node->right, temp->val);
+                }
+            }
+
+            if (!node) return node;
+
+            updateHeight(node);
+            int bal = bf(node);
+
+            //Balance the tree
+            if (bal > 1) {
+                if (bf(node->left) >= 0) return rightRotate(node);
+                else {
+                    node->left = leftRotate(node->left);
+                    return rightRotate(node);
+                }
+            }
+            if (bal < -1) {
+                if (bf(node->right) <= 0) return leftRotate(node);
+                else {
+                    node->right = rightRotate(node->right);
+                    return leftRotate(node);
+                }
+            }
+
+            return node;
+        }
+};
+
+//class Definition
 class AvlTree {
     public:
-        //my methods
-        int popMedian(AvlTree& aTreeMin, AvlTree& aTreeMax);
+        //default Constructor
+        AvlTree() {}
 
-        void insert(const int& median, AvlTree& aTreeMin, AvlTree& aTreeMax);
-
-        int popMax();
-
-        int popMin();
-
-        int getSize() const;
-
-        //textbook methods
-        AvlTree( );
+        //methods
+        void insert(const int& num);
+        int popMedian();
+        void rebalance();
         
-        AvlTree( const AvlTree & rhs );
-
-        AvlTree( AvlTree && rhs );
-        
-        ~AvlTree( );
-
-        /**
-         * Deep copy.
-         */
-        AvlTree & operator=( const AvlTree & rhs );
-            
-        /**
-         * Move.
-         */
-        AvlTree & operator=( AvlTree && rhs );
-        
-        /**
-         * Find the smallest item in the tree.
-         * Throw UnderflowException if empty.
-         */
-        const int& findMin( ) const;
-
-        /**
-         * Find the largest item in the tree.
-         * Throw UnderflowException if empty.
-         */
-        const int & findMax( ) const;
-
-        /**
-         * Returns true if x is found in the tree.
-         */
-        bool contains( const int & x ) const;
-
-        /**
-         * Test if the tree is logically empty.
-         * Return true if empty, false otherwise.
-         */
-        bool isEmpty( ) const;
-
-        /**
-         * Print the tree contents in sorted order.
-         */
-        void printTree( ) const;
-
-        /**
-         * Make the tree logically empty.
-         */
-        void makeEmpty( );
-
-        /**
-         * Insert x into the tree; duplicates are ignored.
-         */
-        void insert( const int & x );
-        
-        /**
-         * Insert x into the tree; duplicates are ignored.
-         */
-        void insert( int && x );
-        
-        /**
-         * Remove x from the tree. Nothing is done if x is not found.
-         */
-        void remove( const int & x );
     private:
-        struct AvlNode
-        {
-            int median;
-            AvlNode   *left;
-            AvlNode   *right;
-            int       height;
-            
-            //size counter
-            int size;
-            //duplicate counter
-            int count;
-
-            AvlNode( const int & ele, AvlNode *lt, AvlNode *rt, int h = 0 )
-            : median{ ele }, left{ lt }, right{ rt }, height{ h } { }
-            
-            AvlNode( int && ele, AvlNode *lt, AvlNode *rt, int h = 0 )
-            : median{ std::move( ele ) }, left{ lt }, right{ rt }, height{ h } { }
-        };
-        AvlNode *root;
-
-        int getSize(AvlNode* node) const;
-
-        /**
-         * Internal method to insert into a subtree.
-         * x is the item to insert.
-         * t is the node that roots the subtree.
-         * Set the new root of the subtree.
-         */
-        void insert( const int & x, AvlNode * & t );
-
-        /**
-         * Internal method to insert into a subtree.
-         * x is the item to insert.
-         * t is the node that roots the subtree.
-         * Set the new root of the subtree.
-         */
-        void insert( int && x, AvlNode * & t );
-        
-        /**
-         * Internal method to remove from a subtree.
-         * x is the item to remove.
-         * t is the node that roots the subtree.
-         * Set the new root of the subtree.
-         */
-        void remove( const int & x, AvlNode * & t );
-        
-        static const int ALLOWED_IMBALANCE = 1;
-
-        // Assume t is balanced or within one of being balanced
-        void balance( AvlNode * & t );
-        
-        /**
-         * Internal method to find the smallest item in a subtree t.
-         * Return node containing the smallest item.
-         */
-        AvlNode * findMin( AvlNode *t ) const;
-
-        /**
-         * Internal method to find the largest item in a subtree t.
-         * Return node containing the largest item.
-         */
-        AvlNode * findMax( AvlNode *t ) const;
-
-
-        /**
-         * Internal method to test if an item is in a subtree.
-         * x is item to search for.
-         * t is the node that roots the tree.
-         */
-        bool contains( const int & x, AvlNode *t ) const;
-
-        /**
-         * Internal method to make subtree empty.
-         */
-        void makeEmpty( AvlNode * & t );
-
-        /**
-         * Internal method to print a subtree rooted at t in sorted order.
-         */
-        void printTree( AvlNode *t ) const;
-
-        /**
-         * Internal method to clone subtree.
-         */
-        AvlNode * clone( AvlNode *t ) const;
-            // Avl manipulations
-        /**
-         * Return the height of node t or -1 if nullptr.
-         */
-        int height( AvlNode *t ) const;
-
-        int max( int lhs, int rhs ) const;
-
-        /**
-         * Rotate binary tree node with left child.
-         * For AVL trees, this is a single rotation for case 1.
-         * Update heights, then set new root.
-         */
-        void rotateWithLeftChild( AvlNode * & k2 );
-
-        /**
-         * Rotate binary tree node with right child.
-         * For AVL trees, this is a single rotation for case 4.
-         * Update heights, then set new root.
-         */
-        void rotateWithRightChild( AvlNode * & k1 );
-
-        /**
-         * Double rotate binary tree node: first left child.
-         * with its right child; then node k3 with new left child.
-         * For AVL trees, this is a double rotation for case 2.
-         * Update heights, then set new root.
-         */
-        void doubleWithLeftChild( AvlNode * & k3 );
-
-        /**
-         * Double rotate binary tree node: first right child.
-         * with its left child; then node k1 with new right child.
-         * For AVL trees, this is a double rotation for case 3.
-         * Update heights, then set new root.
-         */
-        void doubleWithRightChild( AvlNode * & k1 );
+        AVL small, large;
 };
 
 #endif
