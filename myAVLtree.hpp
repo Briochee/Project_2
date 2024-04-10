@@ -9,24 +9,30 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
-#include <stack>
 
-//treeMedian Signature
+//treeMedian signature
 void treeMedian(const std::vector<int>* instructions);
 
 //node structure
-struct Node {
-    int val, height;
-    Node *left, *right;
+struct AvlNode {
+    int median_;
+    int height_;
+    AvlNode *left;
+    AvlNode *right;
 
-    Node(const int& val) : val{val}, left{nullptr}, right{nullptr}, height{1} {}
+    AvlNode(const int& median){
+        median_ = median;
+        height_ = 1;
+        left = nullptr;
+        right = nullptr; 
+    }
 };
 
 //structure of avl tree
 struct AVL {
     public:
         //Root node
-        Node* root;
+        AvlNode* root;
 
         //default constructor
         AVL(){
@@ -34,80 +40,88 @@ struct AVL {
             size = 0;
         }
 
-        //Removes the maximum node in the tree
+        //remove max value of avl tree
         int popMax() {
             if (!root) return -1;
 
-            Node* ptr = root;
-            while (ptr->right) ptr = ptr->right;
+            AvlNode* ptr = root;
+            //goes down the right side of tree to get max value
+            while (ptr->right != nullptr){
+                ptr = ptr->right;
+            }
 
-            int max = ptr->val;
-
-            root = deleteNode(root, ptr->val);
+            int max = ptr->median_;
+            root = deleteNode(root, ptr->median_);
 
             size--;
             return max;
         }
 
-        //Removes the minimum node in the tree
+        //remove max value of avl tree
         int popMin() {
             if (!root) return -1;
 
-            Node* ptr = root;
-            while (ptr->left) ptr = ptr->left;
+            AvlNode* ptr = root;
+            //goes down the left side of tree to get min value
+            while (ptr->left != nullptr){
+                ptr = ptr->left;
+            }
 
-            int min = ptr->val;
-
-            root = deleteNode(root, ptr->val);
+            int min = ptr->median_;
+            root = deleteNode(root, ptr->median_);
 
             size--;
             return min;
         }
 
-        //Returns max number in tree
+        //returns max value
         int getMax() {
             if (!root) return -1;
 
-            Node* ptr = root;
-            while (ptr->right) ptr = ptr->right;
+            AvlNode* ptr = root;
+            while (ptr->right != nullptr){
+                ptr = ptr->right;
+            }
 
-            return ptr->val;
+            return ptr->median_;
         }
 
-        //Adds node to tree
-        void push(int val) {
-            root = insertNode(root,val);
+        //inserts node to tree
+        void push(int median_) {
+            root = insertNode(root,median_);
             size++;
         }
 
-        //Returns size of tree
+        //basic getter for size
         int getSize() {return size;}
 
-        //Checks if tree is empty or not
+        //returns true if root != nullptr
         bool isEmpty() {return !root;}
 
     private:
         int size;
         
-        //Returns node height
-        int getHeight(Node* node) {
+        //basic getter for node height
+        int getHeight(AvlNode* node) {
             if (!node) return 0;
-            return node->height;
+            return node->height_;
         }
 
-        //Updates a nodes height
-        void updateHeight(Node* node) {node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;}
+        //updates height
+        void updateHeight(AvlNode* node) {
+            node->height_ = std::max(getHeight(node->left), getHeight(node->right)) + 1;
+        }
 
-        //Gets the balance factor of a node
-        int bf (Node* node) {
+        //determines factor of unbalance if node is not equal to nullptr
+        int bf (AvlNode* node) {
             if (!node) return 0;
             return getHeight(node->left) - getHeight(node->right);
         }
 
-        //Performs left rotation
-        Node* leftRotate(Node* node) {
-            Node* new_root = node->right;
-            Node* temp = new_root->left;
+        //left rotation
+        AvlNode* leftRotate(AvlNode* node) {
+            AvlNode* new_root = node->right;
+            AvlNode* temp = new_root->left;
 
             new_root->left = node;
             node->right = temp;
@@ -118,10 +132,10 @@ struct AVL {
             return new_root;
         }
 
-        //Performs right rotation
-        Node* rightRotate(Node* node) {
-            Node* new_root = node->left;
-            Node* temp = new_root->right;
+        //right rotation
+        AvlNode* rightRotate(AvlNode* node) {
+            AvlNode* new_root = node->left;
+            AvlNode* temp = new_root->right;
 
             new_root->right = node;
             node->left = temp;
@@ -132,34 +146,43 @@ struct AVL {
             return new_root;
         }
 
-        //Finds the minimum of current node
-        Node* minNode(Node* node) {
-            Node *ptr = node;
-            while (ptr->left) ptr = ptr->left;
+        //finds lowest node
+        AvlNode* minNode(AvlNode* node) {
+            AvlNode *ptr = node;
+            while (ptr->left != nullptr){
+                ptr = ptr->left;
+            }
             return ptr;
         }
 
-        //Inserts node into tree
-        Node* insertNode(Node* node, int val) {
-            if (!node) return new Node(val);
+        //inserts node
+        AvlNode* insertNode(AvlNode* node, int median_) {
+            if (!node){
+                return new AvlNode(median_);
+            }
 
-            if (val <= node->val) node->left = insertNode(node->left, val);
-            else if (val > node->val) node->right = insertNode(node->right, val);
+            if (median_ <= node->median_){
+                node->left = insertNode(node->left, median_);
+            } else if (median_ > node->median_){
+                node->right = insertNode(node->right, median_);
+            }
 
             updateHeight(node);
             int bal = bf(node);
 
             //Balance the tree
             if (bal > 1) {
-                if (val <= node->left->val) return rightRotate(node);
-                else if (val > node->left->val) {
+                if (median_ <= node->left->median_){
+                    return rightRotate(node);
+                } else if (median_ > node->left->median_) {
                     node->left = leftRotate(node->left);
                     return rightRotate(node);
                 }
             }
             if (bal < -1) {
-                if (val > node->right->val) return leftRotate(node);
-                else if (val <= node->right->val) {
+                if (median_ > node->right->median_){
+                    return leftRotate(node);
+                } else if (median_ <= node->right->median_) {
                     node->right = rightRotate(node->right);
                     return leftRotate(node);
                 }
@@ -168,15 +191,19 @@ struct AVL {
             return node;
         }
 
-        //Removes node from tree
-        Node* deleteNode(Node* node, int val) {
-            if (!node) return node;
+        //removes node
+        AvlNode* deleteNode(AvlNode* node, int median_) {
+            if (!node){
+                return node;
+            }
 
-            if (val < node->val) node->left = deleteNode(node->left, val);
-            else if (val > node->val) node->right = deleteNode(node->right, val);
-            else {
+            if (median_ < node->median_){
+                node->left = deleteNode(node->left, median_);
+            } else if (median_ > node->median_){
+                node->right = deleteNode(node->right, median_);
+            } else {
                 if ((!node->left) || (!node->right)) {
-                    Node* temp;
+                    AvlNode* temp;
                     if (node->left) temp = node->left;
                     else temp = node->right;
 
@@ -187,20 +214,21 @@ struct AVL {
                     else *node = *temp;
 
                     delete temp;
-                }
-                else {
-                    Node* temp = minNode(node->right);
-                    node->val = temp->val;
-                    node->right = deleteNode(node->right, temp->val);
+                } else {
+                    AvlNode* temp = minNode(node->right);
+                    node->median_ = temp->median_;
+                    node->right = deleteNode(node->right, temp->median_);
                 }
             }
 
-            if (!node) return node;
+            if (!node){
+                return node;
+            }
 
             updateHeight(node);
             int bal = bf(node);
 
-            //Balance the tree
+            //balance the tree
             if (bal > 1) {
                 if (bf(node->left) >= 0) return rightRotate(node);
                 else {
@@ -220,10 +248,10 @@ struct AVL {
         }
 };
 
-//class Definition
+//class definition
 class AvlTree {
     public:
-        //default Constructor
+        //default constructor
         AvlTree() {}
 
         //methods
