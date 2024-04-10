@@ -5,6 +5,7 @@
 #include <queue>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
 
 #include "myHeap.hpp"
 
@@ -12,6 +13,9 @@ void heapMedian(const std::vector<int>* instructions){
     //creating heap object for heapMedian
     myHeap aHeap;
     
+    //starting timer
+    auto start = std::chrono::high_resolution_clock::now();
+
     for (const int value : *instructions) {
         if (value == -1) {
             aHeap.getMediansToPrint().push_back(aHeap.popMedian());
@@ -19,6 +23,11 @@ void heapMedian(const std::vector<int>* instructions){
             aHeap.insert(value);
         }
     }
+
+    //ending timer
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "\nHeap Completed in: " << duration.count() * 1000 << " milliseconds\n";
 
     //printing medians out after algorithm is finished
     for (const int median : aHeap.getMediansToPrint()) {

@@ -4,9 +4,10 @@
 //NOTE: Appropriate modifications taken from https://www.programiz.com
 
 //libraries
-#include "vector"
-#include "iostream"
-#include "algorithm"
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <chrono>
 
 //header file
 #include "myAVLtree.hpp"
@@ -17,6 +18,9 @@ void treeMedian(const std::vector<int> *instructions) {
     //vector to store medians for printing after
     std::vector<int> mediansToPrint_;
 
+    //starting timer
+    auto start = std::chrono::high_resolution_clock::now();
+
     for (const int& value : *instructions){
         if (value == -1){
             //pop median
@@ -26,6 +30,11 @@ void treeMedian(const std::vector<int> *instructions) {
             tree.insert(value);
         }
     }
+
+    //ending timer
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "\nTree Completed in: " << duration.count() * 1000 << " milliseconds\n";
 
     for (const int& medians : mediansToPrint_){
         std::cout << medians << " ";

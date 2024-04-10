@@ -5,11 +5,15 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
 
 #include "myVector.hpp"
 
 void vectorMedian(const std::vector<int>* instructions){
     myVector aVector;
+
+    //starting timer
+    auto start = std::chrono::high_resolution_clock::now();
 
     for (const int value : *instructions){
         if (value == -1){
@@ -18,6 +22,11 @@ void vectorMedian(const std::vector<int>* instructions){
             aVector.insert(value);
         }
     }
+
+    //ending timer
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "\nVector Completed in: " << duration.count() * 1000 << " milliseconds\n";
 
     //printing medians out after algorithm is finished sorting
     for (const int median : aVector.getMediansToPrint()){

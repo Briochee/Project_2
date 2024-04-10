@@ -5,6 +5,7 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
 
 #include "myList.hpp"
 
@@ -12,6 +13,9 @@ void listMedian(const std::vector<int>* instructions){
     //initalizing data structure
     myList aList;
     
+    //starting timer
+    auto start = std::chrono::high_resolution_clock::now();
+
     for (const int value : *instructions){
         if (value == -1) {
             aList.getMediansToPrint().push_back(aList.popMedian());
@@ -19,6 +23,11 @@ void listMedian(const std::vector<int>* instructions){
             aList.insert(value);
         }
     }
+
+    //ending timer
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "\nList Completed in: " << duration.count() * 1000 << " milliseconds\n";
 
     //printing medians out after algorithm is finished sorting
     for (const int median : aList.getMediansToPrint()){
