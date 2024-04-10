@@ -108,7 +108,7 @@ struct AVL {
         }
 
         //updates height
-        void updateHeight(AvlNode* node) {
+        void changeHeight(AvlNode* node) {
             node->height_ = std::max(getHeight(node->left), getHeight(node->right)) + 1;
         }
 
@@ -126,8 +126,8 @@ struct AVL {
             new_root->left = node;
             node->right = temp;
 
-            updateHeight(node);
-            updateHeight(new_root);
+            changeHeight(node);
+            changeHeight(new_root);
 
             return new_root;
         }
@@ -140,8 +140,8 @@ struct AVL {
             new_root->right = node;
             node->left = temp;
 
-            updateHeight(node);
-            updateHeight(new_root);
+            changeHeight(node);
+            changeHeight(new_root);
 
             return new_root;
         }
@@ -167,7 +167,7 @@ struct AVL {
                 node->right = insertNode(node->right, median_);
             }
 
-            updateHeight(node);
+            changeHeight(node);
             int bal = bf(node);
 
             //Balance the tree
@@ -225,7 +225,7 @@ struct AVL {
                 return node;
             }
 
-            updateHeight(node);
+            changeHeight(node);
             int bal = bf(node);
 
             //balance the tree
@@ -257,7 +257,7 @@ class AvlTree {
         //methods
         void insert(const int& num);
         int popMedian();
-        void rebalance();
+        void balance();
         
     private:
         AVL small, large;
